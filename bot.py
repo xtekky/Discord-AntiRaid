@@ -6,7 +6,6 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 CONF = {
     "token": "BOT_TOKEN_HERE",
     "prefix": "PREFIX_HERE",
-    "name": "BOT_NAME"
     "guild_id": 0,
     "other": {
         "log_channel": "",
@@ -16,14 +15,12 @@ CONF = {
     "mod_role": "",
     "mod_role_id": 0,       
     }
-
-
 }
 
 
 # --------------- other ----------------
 os.system('cls' if os.name == 'nt' else 'clear')
-os.system(f'title {CONF["name"]} v1 ~ Starting...' if os.name == 'nt' else '')
+os.system(f'title Security v1 ~ Starting... ^| Github ~ @xtekky' if os.name == 'nt' else '')
 cursor.hide()
 start = time.time()
 
@@ -41,7 +38,7 @@ pings = 0
 @bot.event
 async def on_ready():
     print(f' [startup] Ready ({round(time.time()-start, 1)}s) | Servers: {len(bot.guilds)}')
-    os.system('title Security v1 ~ Online' if os.name == 'nt' else '')
+    os.system('title Security v1 ~ Online ^| Github ~ @xtekky' if os.name == 'nt' else '')
 
     while True:
         activity = discord.Activity(type=discord.ActivityType.playing, name=random.choice([f'Fucking nukers', 'L nukers', 'Sercurity', 'v.1.0']))
