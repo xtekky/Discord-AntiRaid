@@ -2,16 +2,11 @@ import requests, discord, threading, random, json, asyncio, time, cursor, os
 from discord.ext import commands
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
-# --------------- other ----------------
-os.system('cls' if os.name == 'nt' else 'clear')
-os.system('title Onlp v1 ~ Starting...' if os.name == 'nt' else '')
-cursor.hide()
-start = time.time()
-
 # -------------- config ----------------
 CONF = {
     "token": "BOT_TOKEN_HERE",
     "prefix": "PREFIX_HERE",
+    "name": "BOT_NAME"
     "guild_id": 0,
     "other": {
         "log_channel": "",
@@ -24,7 +19,13 @@ CONF = {
 
 
 }
-# -------------- config ----------------
+
+
+# --------------- other ----------------
+os.system('cls' if os.name == 'nt' else 'clear')
+os.system(f'title {CONF["name"]} v1 ~ Starting...' if os.name == 'nt' else '')
+cursor.hide()
+start = time.time()
 
 bot = commands.AutoShardedBot(
         command_prefix = CONF["prefix"], 
@@ -33,6 +34,9 @@ bot = commands.AutoShardedBot(
     )
 
 pings = 0
+
+
+# --------------- main ----------------
 
 @bot.event
 async def on_ready():
