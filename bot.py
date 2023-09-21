@@ -1,74 +1,57 @@
-import requests, discord, threading, random, json, asyncio, time, cursor, os
+import os
+import random
+import asyncio
+import logging
+import discord
 from discord.ext import commands
-from discord_webhook import DiscordWebhook, DiscordEmbed
+from dotenv import load_dotenv
 
-# -------------- config ----------------
-CONF = {
-    "token": "BOT_TOKEN_HERE",
-    "prefix": "PREFIX_HERE",
-    "guild_id": 0,
-    "other": {
-        "log_channel": "",
-        "blacklisted": [           # These configs don't have any use yet but will as I improve the bot
- 
-        ],
-    "mod_role": "",
-    "mod_role_id": 0,       
-    }
-}
+load_dotenv()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
-# --------------- other ----------------
-os.system('cls' if os.name == 'nt' else 'clear')
-os.system(f'title Security v1 ~ Starting... ^| Github ~ @xtekky' if os.name == 'nt' else '')
-cursor.hide()
-start = time.time()
+# Load configuration from environment variables
+TOKEN = os.getenv('BOT_TOKEN')
+PREFIX = os.getenv('BOT_PREFIX')
+GUILD_ID = int(os.getenv('BOT_GUILD_ID'))
+LOG_CHANNEL = int(os.getenv('BOT_LOG_CHANNEL'))
+MOD_ROLE_ID = int(os.getenv('BOT_MOD_ROLE_ID'))
 
-bot = commands.AutoShardedBot(
-        command_prefix = CONF["prefix"], 
-        help_command = None, 
-        intents = discord.Intents().all()
-    )
+# Create the bot instance
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-pings = 0
-
-
-# --------------- main ----------------
-
+# Event: Bot is ready
 @bot.event
 async def on_ready():
-    print(f' [startup] Ready ({round(time.time()-start, 1)}s) | Servers: {len(bot.guilds)}')
-    os.system('title Security v1 ~ Online ^| Github ~ @xtekky' if os.name == 'nt' else '')
+    logging.info(f'Bot is ready | Servers: {len(bot.guilds)}')
+    await bot.change_presence(activity=discord.Game(name=random.choice(['Fucking nukers', 'L nukers', 'Security', 'v.1.0'])))
 
-    while True:
-        activity = discord.Activity(type=discord.ActivityType.playing, name=random.choice([f'Fucking nukers', 'L nukers', 'Sercurity', 'v.1.0']))
-        await bot.change_presence(activity=activity)
-        await asyncio.sleep(10)
-
-
+# Event: Message received
 @bot.event
-async def on_message(ctx):
-    try:
-        if ctx.author == bot.user:
-            return
-        
-        if ctx.author.top_role.permissions.administrator is True:
-            
-            if str(ctx.content).count('<@') > 3:
-                await ctx.channel.send(f" <@{ctx.author.id}> that's a **lot** of pings", delete_after=5)
-            return
+async def on_message(message):
+    if message.author.bot:
+        return
 
-        else:
-            if str(ctx.content).count('<@') > 3:
-                await ctx.delete()
-                
-                overwrite = ctx.channel.overwrites_for(ctx.guild.default_role)
-                overwrite.send_messages = False
-                await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-                await ctx.channel.send(f' <@{ctx.author.id}> supicion of massping attack, channel locked')
-                
-    except Exception as e:
-        await ctx.channel.send(e)
+    if message.author.top_role.permissions.administrator:
+        if str(message.content).count('<@') > 3:
+            await message.channel.send(f" <@{message.author.id}> that's a **lot** of pings", delete_after=5)
+        return
+    else:
+        if str(message.content).count('<@') > 3:
+            await message.delete()
+            overwrite = message.channel.overwrites_for(message.guild.default_role)
+            overwrite.send_messages = False
+            await message.channel.set_permissions(message.guild.default_role, overwrite=overwrite)
+            await message.channel.send(f' <@{message.author.id}> suspicion of massping attack, channel locked')
 
+    await bot.process_commands(message)
 
-bot.run(CONF["token"])
+# Command: Ping
+@bot.command()
+async def ping(ctx):
+    await ctx.send('Pong!')
+
+# Run the bot
+bot.run(TOKEN)
